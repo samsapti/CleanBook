@@ -3,36 +3,46 @@ package main
 import (
 	"flag"
 	"os"
+	"path/filepath"
 
 	"github.com/samsapti/CleanMessages/internal/utils"
 	"github.com/samsapti/CleanMessages/pkg/conversation"
 )
 
 var (
-	// currently just a JSON file path
-	path *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
-	port *int    = flag.Int("port", 8080, "Port to listen on")
+	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
+	port     *int    = flag.Int("port", 8080, "Port to listen on")
+
+	conversations []*conversation.Conversation
 )
 
 func main() {
 	flag.Parse()
 
-	if len(*path) == 0 {
-		utils.PrintError("error: -path must be specified\n")
+	// Quit if -path was not specified
+	if len(*basePath) == 0 {
 		flag.Usage()
+		utils.PrintPanic("error: -path must be specified\n")
+	}
+
+	inbox := filepath.Join(*basePath, "messages", "inbox")
+	convDirs, err := os.ReadDir(inbox)
+	if err != nil {
+		utils.PrintError("error: failed to open messages directory: %s", err)
 		os.Exit(1)
 	}
 
-	conv, err := conversation.Parse(*path)
-	if err != nil {
-		panic("Error parsing JSON. Aborting...")
-	}
+	for _, v := range convDirs {
+		if !v.IsDir() {
+			continue
+		}
 
-	for i, s := range conv.Participants {
-		utils.PrintInfo("Participant %d: %s", i, s.Name)
-	}
+		filePath := filepath.Join(inbox, v.Name(), "message_1.json")
+		conv, err := conversation.Parse(filePath)
+		if err != nil {
+			utils.PrintError("error: could not parse JSON file: %s", err)
+		}
 
-	for _, m := range conv.Messages {
-		utils.PrintInfo("%s: %s", m.SenderName, m.Content)
+		conversations = append(conversations, conv)
 	}
 }

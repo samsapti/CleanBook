@@ -16,3 +16,7 @@ func PrintError(format string, a ...any) (int, error) {
 func PrintInfo(format string, a ...any) (int, error) {
 	return print(os.Stdout, format, a...)
 }
+
+func PrintPanic(format string, a ...any) {
+	panic(fmt.Sprintf(format, a...))
+}
