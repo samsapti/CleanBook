@@ -13,13 +13,13 @@ type JoinMode struct {
 	Link string `json:"link"`
 }
 
-// Reaction represents a reaction on a message.
+// Reaction represents a reaction to a message.
 type Reaction struct {
 	Emoji string `json:"reaction"`
 	Actor string `json:"actor"`
 }
 
-// Share represents a shared link.
+// Share represents a shared media.
 type Share struct {
 	Link string `json:"link"`
 }
@@ -31,9 +31,9 @@ type Sticker struct {
 	Path string `json:"uri"`
 }
 
-// File represents files sent in a message. This includes photo
-// messages. File.Path is the local path to the file, relative to the
-// path of the data directory.
+// File represents files sent in a message. This includes photos.
+// File.Path is the local path to the file, relative to the path of the
+// data directory.
 type File struct {
 	Path      string `json:"uri"`
 	TimeStamp uint64 `json:"creation_timestamp"`
