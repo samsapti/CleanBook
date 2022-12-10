@@ -4,8 +4,8 @@ import (
 	"flag"
 	"os"
 
-	"github.com/samsapti/CleanMessages/internal/conversation"
 	"github.com/samsapti/CleanMessages/internal/utils"
+	"github.com/samsapti/CleanMessages/pkg/conversation"
 )
 
 var (
