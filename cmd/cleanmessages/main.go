@@ -13,7 +13,7 @@ var (
 	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
 	port     *int    = flag.Int("port", 8080, "Port to listen on")
 
-	conversations []*conversation.Conversation
+	convs []*conversation.Conversation
 )
 
 func main() {
@@ -22,14 +22,14 @@ func main() {
 	// Quit if -path was not specified
 	if len(*basePath) == 0 {
 		flag.Usage()
-		utils.PrintPanic("error: -path must be specified\n")
+		utils.PrintFatal("error: -path must be specified\n")
 	}
 
-	inbox := filepath.Join(*basePath, "messages", "inbox")
-	convDirs, err := os.ReadDir(inbox)
+	messagesPath := filepath.Join(*basePath, "messages")
+	inboxPath := filepath.Join(messagesPath, "inbox")
+	convDirs, err := os.ReadDir(inboxPath)
 	if err != nil {
-		utils.PrintError("error: failed to open messages directory: %s", err)
-		os.Exit(1)
+		utils.PrintFatal("error: failed to open messages directory: %s", err)
 	}
 
 	for _, v := range convDirs {
@@ -37,12 +37,14 @@ func main() {
 			continue
 		}
 
-		filePath := filepath.Join(inbox, v.Name(), "message_1.json")
+		filePath := filepath.Join(inboxPath, v.Name(), "message_1.json")
 		conv, err := conversation.Parse(filePath)
 		if err != nil {
 			utils.PrintError("error: could not parse JSON file: %s", err)
 		}
 
-		conversations = append(conversations, conv)
+		// conv.Path is relative to messagesPath, make it relative to basePath
+		conv.Path = filepath.Join("messages", conv.Path)
+		convs = append(convs, conv)
 	}
 }
