@@ -43,8 +43,6 @@ func main() {
 			utils.PrintError("error: could not parse JSON file: %s", err)
 		}
 
-		// conv.Path is relative to messagesPath, make it relative to basePath
-		conv.Path = filepath.Join("messages", conv.Path)
 		convs = append(convs, conv)
 	}
 }

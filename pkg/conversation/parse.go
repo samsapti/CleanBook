@@ -3,6 +3,7 @@ package conversation
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 // Parse takes a path to a JSON file containing a conversation, and
@@ -18,6 +19,9 @@ func Parse(filePath string) (*Conversation, error) {
 	if err = json.Unmarshal(data, &conv); err != nil {
 		return nil, err
 	}
+
+	// Make conv.Path relative to the path given in -path
+	conv.Path = filepath.Join("messages", conv.Path)
 
 	return &conv, nil
 }
