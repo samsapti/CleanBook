@@ -17,19 +17,20 @@ var (
 )
 
 func main() {
+	// Parse command-line flags
 	flag.Parse()
 
 	// Quit if -path was not specified
 	if len(*basePath) == 0 {
 		flag.Usage()
-		utils.PrintFatal("error: -path must be specified\n")
+		utils.PrintFatal("\nerror: -path must be specified")
 	}
 
 	messagesPath := filepath.Join(*basePath, "messages")
 	inboxPath := filepath.Join(messagesPath, "inbox")
 	convDirs, err := os.ReadDir(inboxPath)
 	if err != nil {
-		utils.PrintFatal("error: failed to open messages directory: %s", err)
+		utils.PrintFatal("error: %s", err)
 	}
 
 	for _, v := range convDirs {
@@ -40,7 +41,7 @@ func main() {
 		filePath := filepath.Join(inboxPath, v.Name(), "message_1.json")
 		conv, err := conversation.Parse(filePath)
 		if err != nil {
-			utils.PrintError("error: could not parse JSON file: %s", err)
+			utils.PrintError("error: %s", err)
 		}
 
 		convs = append(convs, conv)

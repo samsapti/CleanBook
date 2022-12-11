@@ -18,5 +18,6 @@ func PrintInfo(format string, a ...any) (int, error) {
 }
 
 func PrintFatal(format string, a ...any) {
-	panic(fmt.Sprintf(format, a...))
+	PrintError(format, a...)
+	os.Exit(1)
 }
