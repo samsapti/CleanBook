@@ -1,6 +1,7 @@
 package conversation
 
-// Participant represents a person participating in a conversation.
+// Participant represents a Facebook user participating in a
+// conversation.
 type Participant struct {
 	Name string `json:"name"`
 }
