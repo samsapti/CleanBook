@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
-	port     *int    = flag.Int("port", 8080, "Port to listen on")
+	basePath *string = flag.String("d", "", "Path to the directory containing your Facebook data (required)")
+	port     *int    = flag.Int("p", 8080, "Port to listen on")
 
 	convs []*conversation.Conversation
 )
