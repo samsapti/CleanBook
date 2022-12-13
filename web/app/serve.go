@@ -76,6 +76,8 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Serve renders the web application and serves it on the port in
+// rd.Port. rd is a RuntimeData struct.
 func Serve(rd *RuntimeData) {
 	appTitle = rd.AppTitle
 	fbUser = rd.User
@@ -90,7 +92,7 @@ func Serve(rd *RuntimeData) {
 	r.Get("/messages/{convID}", handleConv)
 
 	// Serve the application
-	utils.PrintInfo("Listening on localhost:%d", rd.Port)
+	utils.PrintInfo("Listening on http://localhost:%d", rd.Port)
 	if err := http.ListenAndServe(fmt.Sprintf("localhost:%d", rd.Port), r); err != nil {
 		utils.PrintFatal("error: %s", err)
 	}
