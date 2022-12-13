@@ -17,7 +17,7 @@ var (
 	basePath *string = flag.String("d", "", "Path to the directory containing your Facebook data (required)")
 	port     *int    = flag.Int("p", 8080, "Port to listen on")
 
-	convs  []*conversation.Conversation
+	convs  map[string]*conversation.Conversation
 	fbUser *user.Profile
 )
 
@@ -31,6 +31,10 @@ func main() {
 		utils.PrintFatal("\nerror: -path must be specified")
 	}
 
+	// convs is a map from conversation path to Conversation struct
+	convs = make(map[string]*conversation.Conversation)
+
+	// Get conversation dirs
 	messagesPath := filepath.Join(*basePath, "messages")
 	inboxPath := filepath.Join(messagesPath, "inbox")
 	convDirs, err := os.ReadDir(inboxPath)
@@ -49,7 +53,7 @@ func main() {
 			utils.PrintError("error: %s", err)
 		}
 
-		convs = append(convs, conv)
+		convs[conv.Path] = conv
 	}
 
 	profilePath := filepath.Join(*basePath, "profile_information", "profile_information.json")
