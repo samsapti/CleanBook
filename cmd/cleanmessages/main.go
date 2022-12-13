@@ -7,13 +7,18 @@ import (
 
 	"github.com/samsapti/CleanMessages/internal/utils"
 	"github.com/samsapti/CleanMessages/pkg/conversation"
+	"github.com/samsapti/CleanMessages/pkg/user"
+	web "github.com/samsapti/CleanMessages/web/app"
 )
+
+const appTitle string = "CleanMessages"
 
 var (
 	basePath *string = flag.String("d", "", "Path to the directory containing your Facebook data (required)")
 	port     *int    = flag.Int("p", 8080, "Port to listen on")
 
-	convs []*conversation.Conversation
+	convs  []*conversation.Conversation
+	fbUser *user.Profile
 )
 
 func main() {
@@ -46,4 +51,17 @@ func main() {
 
 		convs = append(convs, conv)
 	}
+
+	profilePath := filepath.Join(*basePath, "profile_information", "profile_information.json")
+	fbUser, err = user.Parse(profilePath)
+	if err != nil {
+		utils.PrintFatal("error: %s", err)
+	}
+
+	web.Serve(&web.RuntimeData{
+		AppTitle: appTitle,
+		User:     fbUser,
+		Convs:    convs,
+		Port:     *port,
+	})
 }

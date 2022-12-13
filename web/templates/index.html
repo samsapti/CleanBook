@@ -1,0 +1,7 @@
+{{ template "base" . }}
+{{ define "body" }}
+<h2>Welcome to {{ .AppTitle }}!</h2>
+<p>
+  You are now viewing the message data of the Facebook user: {{ .User.Name.Full }}
+</p>
+{{ end }}

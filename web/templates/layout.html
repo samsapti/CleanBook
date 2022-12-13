@@ -1,0 +1,21 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>{{ .PageTitle }} | {{ .AppTitle }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+  </head>
+	<body>
+    <div id="header">
+      <div id="title">
+        <h1>{{ .AppTitle }}</h1>
+      </div>
+    </div>
+    <div id="body">
+      {{ block "body" . }}
+      {{ end }}
+    </div>
+	</body>
+</html>
+{{ end }}
