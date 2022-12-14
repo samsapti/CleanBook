@@ -16,7 +16,7 @@ guess what, it contains trackers! The HTML format makes a lot of network
 requests to Meta-owned URLs, which really isn't what a data download
 should do. But fear not, CleanBook fixes that problem.
 
-### Usage
+## Usage
 
 For now, you need to have Git and Go installed on you system. To run
 CleanBook, run the following command:
@@ -29,3 +29,7 @@ cd CleanBook
 # Run CleanBook (-port is optional, default is 8080)
 go run cmd/cleanbook/main.go -path /path/to/your/data [-port 1234]
 ```
+
+## Features
+
+CleanBook currently only supports viewing messages.
