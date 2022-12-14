@@ -19,7 +19,7 @@ should do. But fear not, CleanBook fixes that problem.
 ## Usage
 
 For now, you need to have Git and Go installed on you system. To run
-CleanBook, run the following command:
+CleanBook, run the following commands:
 
 ```sh
 # Clone the repository
