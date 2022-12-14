@@ -1,8 +1,6 @@
 # CleanBook
 
-⚠ **Still in development!**
-
-:warning:
+**:warning: Still in development!**
 
 CleanBook is an alternative way to view your downloaded Facebook data,
 without trackers and network requests. It requires you to have the JSON
