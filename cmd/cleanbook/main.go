@@ -16,9 +16,8 @@ const appTitle string = "CleanBook"
 var (
 	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
 	port     *int    = flag.Int("port", 8080, "Port to listen on")
-
-	convs  map[string]*conversation.Conversation
-	fbUser *user.Profile
+	convs            = make(map[string]*conversation.Conversation)
+	fbUser   *user.Profile
 )
 
 func main() {
@@ -31,9 +30,6 @@ func main() {
 		utils.PrintFatal("\nerror: -path must be specified")
 	}
 
-	// convs is a map from conversation path to Conversation struct
-	convs = make(map[string]*conversation.Conversation)
-
 	// Get conversation dirs
 	messagesPath := filepath.Join(*basePath, "messages")
 	inboxPath := filepath.Join(messagesPath, "inbox")
@@ -42,6 +38,7 @@ func main() {
 		utils.PrintFatal("error: %s", err)
 	}
 
+	// Read conversation files
 	for _, v := range convDirs {
 		if !v.IsDir() {
 			continue
@@ -53,6 +50,7 @@ func main() {
 			utils.PrintError("error: %s", err)
 		}
 
+		// Map Conversation.Path to *Conversation
 		convs[conv.Path] = conv
 	}
 
