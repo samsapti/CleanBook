@@ -14,8 +14,8 @@ import (
 const appTitle string = "CleanMessages"
 
 var (
-	basePath *string = flag.String("d", "", "Path to the directory containing your Facebook data (required)")
-	port     *int    = flag.Int("p", 8080, "Port to listen on")
+	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")
+	port     *int    = flag.Int("port", 8080, "Port to listen on")
 
 	convs  map[string]*conversation.Conversation
 	fbUser *user.Profile
@@ -56,6 +56,7 @@ func main() {
 		convs[conv.Path] = conv
 	}
 
+	// Get user information
 	profilePath := filepath.Join(*basePath, "profile_information", "profile_information.json")
 	fbUser, err = user.Parse(profilePath)
 	if err != nil {

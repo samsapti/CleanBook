@@ -20,7 +20,7 @@ func Parse(filePath string) (*Conversation, error) {
 		return nil, err
 	}
 
-	// Make conv.Path relative to the path given in -d
+	// Make conv.Path relative to the path given in -path
 	conv.Path = filepath.Join("messages", conv.Path)
 
 	return &conv, nil
