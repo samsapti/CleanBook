@@ -1,4 +1,4 @@
-module github.com/samsapti/CleanMessages
+module github.com/samsapti/CleanBook
 
 go 1.19
 

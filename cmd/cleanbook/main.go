@@ -5,13 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/samsapti/CleanMessages/internal/utils"
-	"github.com/samsapti/CleanMessages/pkg/conversation"
-	"github.com/samsapti/CleanMessages/pkg/user"
-	web "github.com/samsapti/CleanMessages/web/app"
+	"github.com/samsapti/CleanBook/internal/utils"
+	"github.com/samsapti/CleanBook/pkg/conversation"
+	"github.com/samsapti/CleanBook/pkg/user"
+	web "github.com/samsapti/CleanBook/web/app"
 )
 
-const appTitle string = "CleanMessages"
+const appTitle string = "CleanBook"
 
 var (
 	basePath *string = flag.String("path", "", "Path to the directory containing your Facebook data (required)")

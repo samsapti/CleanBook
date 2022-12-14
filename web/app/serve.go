@@ -8,9 +8,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/samsapti/CleanMessages/internal/utils"
-	"github.com/samsapti/CleanMessages/pkg/conversation"
-	"github.com/samsapti/CleanMessages/pkg/user"
+	"github.com/samsapti/CleanBook/internal/utils"
+	"github.com/samsapti/CleanBook/pkg/conversation"
+	"github.com/samsapti/CleanBook/pkg/user"
 )
 
 var (

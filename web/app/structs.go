@@ -1,8 +1,8 @@
 package web
 
 import (
-	"github.com/samsapti/CleanMessages/pkg/conversation"
-	"github.com/samsapti/CleanMessages/pkg/user"
+	"github.com/samsapti/CleanBook/pkg/conversation"
+	"github.com/samsapti/CleanBook/pkg/user"
 )
 
 // PageData holds the data that should be used for rendering the web
