@@ -12,16 +12,24 @@ import (
 func Parse(filePath string) (*Conversation, error) {
 	var conv Conversation
 
-	data, err := os.ReadFile(filePath)
+	// Open the file
+	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
-	if err = json.Unmarshal(data, &conv); err != nil {
+
+	// Read JSON data
+	if err = json.NewDecoder(file).Decode(&conv); err != nil {
 		return nil, err
 	}
 
 	// Make conv.Path relative to the path given in -path
 	conv.Path = filepath.Join("messages", conv.Path)
+
+	// Reverse conv.Messages slice
+	for i, j := 0, len(conv.Messages)-1; i < j; i, j = i+1, j-1 {
+		conv.Messages[i], conv.Messages[j] = conv.Messages[j], conv.Messages[i]
+	}
 
 	return &conv, nil
 }

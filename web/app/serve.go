@@ -68,11 +68,11 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, &PageData{
-		AppTitle:    appTitle,
-		PageTitle:   "Messages",
-		User:        fbUser,
-		Convs:       convs,
-		CurrentConv: convs[chi.URLParam(r, "convID")],
+		AppTitle:  appTitle,
+		PageTitle: "Messages",
+		User:      fbUser,
+		Convs:     convs,
+		ConvID:    chi.URLParam(r, "convID"),
 	})
 }
 

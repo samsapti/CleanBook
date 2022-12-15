@@ -1,0 +1,25 @@
+{{ template "base" . }}
+{{ define "body" }}
+<h2>{{ .PageTitle }}</h2>
+<p>
+  You are now viewing the conversation with ID: {{ .ConvID }}
+</p>
+{{ with index .Convs .ConvID }}
+  Participants:
+  <ul>
+    {{ range .Participants }}
+      <li>{{ .Name }}</li>
+    {{ end }}
+  </ul>
+  {{ range .Messages }}
+    <div id="sender">
+      {{ .SenderName }}
+    </div>
+    <div id="content">
+      {{ .Content }}
+    </div>
+  {{ end }}
+{{ else }}
+  <p>Error: No such conversation!</p>
+{{ end }}
+{{ end }}

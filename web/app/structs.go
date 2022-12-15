@@ -8,11 +8,11 @@ import (
 // PageData holds the data that should be used for rendering the web
 // application templates.
 type PageData struct {
-	AppTitle    string
-	PageTitle   string
-	User        *user.Profile
-	Convs       map[string]*conversation.Conversation
-	CurrentConv *conversation.Conversation
+	AppTitle  string
+	PageTitle string
+	User      *user.Profile
+	Convs     map[string]*conversation.Conversation
+	ConvID    string
 }
 
 // RuntimeData holds data that is used on runtime.

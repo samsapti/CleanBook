@@ -50,8 +50,8 @@ func main() {
 			utils.PrintError("error: %s", err)
 		}
 
-		// Map Conversation.Path to *Conversation
-		convs[conv.Path] = conv
+		// Map v.Name() to *Conversation
+		convs[v.Name()] = conv
 	}
 
 	// Get user information
