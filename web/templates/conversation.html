@@ -1,9 +1,6 @@
 {{ template "base" . }}
 {{ define "body" }}
 <h2>{{ .PageTitle }}</h2>
-<p>
-  You are now viewing the conversation with ID: {{ .ConvID }}
-</p>
 {{ with index .Convs .ConvID }}
   Participants:
   <ul>
@@ -20,6 +17,6 @@
     </div>
   {{ end }}
 {{ else }}
-  <p>Error: No such conversation!</p>
+  <p>It's quite empty here</p>
 {{ end }}
 {{ end }}

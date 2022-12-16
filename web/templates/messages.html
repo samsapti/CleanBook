@@ -1,9 +1,6 @@
 {{ template "base" . }}
 {{ define "body" }}
 <h2>{{ .PageTitle }}</h2>
-<p>
-  You are now viewing your conversations
-</p>
 <ul>
   {{ range $key, $value := .Convs }}
     <li><a href="/messages/{{ $key }}">{{ $value.Title }}</a></li>

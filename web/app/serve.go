@@ -60,6 +60,13 @@ func handleMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleConv(w http.ResponseWriter, r *http.Request) {
+	pageTitle := "Messages"
+	convID := chi.URLParam(r, "convID")
+	conv := convs[convID]
+	if conv != nil {
+		pageTitle += " - " + conv.Title
+	}
+
 	tmpl, err := parseTemplates("conversation.html")
 	if err != nil {
 		utils.PrintError("error: %s", err)
@@ -69,7 +76,7 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.Execute(w, &PageData{
 		AppTitle:  appTitle,
-		PageTitle: "Messages",
+		PageTitle: pageTitle,
 		User:      fbUser,
 		Convs:     convs,
 		ConvID:    chi.URLParam(r, "convID"),
