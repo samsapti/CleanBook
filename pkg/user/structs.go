@@ -10,7 +10,7 @@ type Name struct {
 
 // Profile represents a Facebook user.
 type Profile struct {
-	Name         Name   `json:"name"`
+	Name         *Name  `json:"name"`
 	Username     string `json:"username"`
 	RegisteredAt uint64 `json:"registration_timestamp"`
 }
