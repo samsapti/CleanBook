@@ -51,7 +51,7 @@ type Message struct {
 
 // Conversation represents a conversation with one or more Facebook
 // user(s). It matches the data in the JSON files with a file path that
-// looks like: messages/inbox/{some_conversation}/message_1.json
+// looks like: messages/inbox/{convID}/message_1.json
 type Conversation struct {
 	Participants     []*Participant `json:"participants"`
 	Messages         []*Message     `json:"messages"`
