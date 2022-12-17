@@ -41,8 +41,8 @@ type Message struct {
 	Content      string      `json:"content"`
 	Files        []*File     `json:"files"`
 	Photos       []*File     `json:"photos"`
-	Share        Share       `json:"share"`
-	Sticker      File        `json:"sticker"`
+	Share        *Share      `json:"share"`
+	Sticker      *File       `json:"sticker"`
 	Reactions    []*Reaction `json:"reactions"`
 	CallDuration int         `json:"call_duration"`
 	Type         string      `json:"type"`
@@ -59,5 +59,5 @@ type Conversation struct {
 	StillParticipant bool           `json:"is_still_participant"`
 	Type             string         `json:"thread_type"`
 	Path             string         `json:"thread_path"`
-	JoinMode         JoinMode       `json:"joinable_mode"`
+	JoinMode         *JoinMode      `json:"joinable_mode"`
 }
