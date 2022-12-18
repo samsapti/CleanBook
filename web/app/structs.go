@@ -21,4 +21,5 @@ type RuntimeData struct {
 	User     *user.Profile
 	Convs    map[string]*conversation.Conversation
 	Port     int
+	BasePath string
 }

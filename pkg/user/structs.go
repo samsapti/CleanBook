@@ -12,5 +12,5 @@ type Name struct {
 type Profile struct {
 	Name         *Name  `json:"name"`
 	Username     string `json:"username"`
-	RegisteredAt uint64 `json:"registration_timestamp"`
+	RegisteredAt int64  `json:"registration_timestamp"`
 }

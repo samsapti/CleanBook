@@ -66,5 +66,6 @@ func main() {
 		User:     fbUser,
 		Convs:    convs,
 		Port:     *port,
+		BasePath: *basePath,
 	})
 }

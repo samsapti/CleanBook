@@ -1,6 +1,4 @@
-{{ template "base" . }}
-{{ define "body" }}
-<h2>{{ .PageTitle }}</h2>
+{{ define "conversation" }}
 {{ with index .Convs .ConvID }}
   Participants:
   <ul>
@@ -9,14 +7,45 @@
     {{ end }}
   </ul>
   {{ range .Messages }}
-    <div id="sender">
-      {{ .SenderName }}
+    <div class="message-sender">
+      <strong>{{ .SenderName }}</strong>
     </div>
-    <div id="content">
-      {{ .Content }}
+    <div class="message-timestamp">
+      <em>{{ .TimeStampMS | fromUnixMilli }}</em>
     </div>
+    {{ with .Photos }}
+      <div class="message-photos">
+        {{ range . }}
+          <img src="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}">
+        {{ end }}
+      </div>
+    {{ end }}
+    {{ with .Files }}
+      <div class="message-files">
+        {{ range . }}
+          <a href="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}" target="_blank">
+            {{ .Path | base }}
+          </a>
+        {{ end }}
+      </div>
+    {{ end }}
+    {{ with .Content }}
+      <div class="message-content">
+        {{ . }}
+      </div>
+    {{ end }}
+    {{ with .Share }}
+      <div class="message-share">
+        <a href="{{ .Link }}" title="Shared media" target="_blank">{{ .Link }}</a>
+      </div>
+    {{ end }}
+    {{ with .Sticker }}
+      <div class="message-sticker">
+        <img src="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}">
+      </div>
+    {{ end }}
   {{ end }}
 {{ else }}
-  <p>It's quite empty here</p>
+  <p>No such conversation</p>
 {{ end }}
 {{ end }}

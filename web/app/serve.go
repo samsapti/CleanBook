@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,14 +19,33 @@ var (
 	appTitle string
 	fbUser   *user.Profile
 	convs    map[string]*conversation.Conversation
+	basePath string
 )
 
-func parseTemplates(fileName string) (*template.Template, error) {
-	tmplDir := filepath.Join("web", "templates")
-	layout := filepath.Join(tmplDir, "layout.html")
-	tmpl := filepath.Join(tmplDir, fileName)
+func parseTemplates(filenames ...string) (*template.Template, error) {
+	var tmplFiles []string
+	tmplDir := filepath.Join("web", "templates") // TODO: Make this work when not cloning the repo
+	tmplFiles = append(tmplFiles, filepath.Join(tmplDir, "layout.html"))
 
-	return template.New(fileName).ParseFiles(layout, tmpl)
+	// Append filenames
+	for _, v := range filenames {
+		tmplFiles = append(tmplFiles, filepath.Join(tmplDir, v))
+	}
+
+	tmplName := filenames[len(filenames)-1]
+	funcMap := template.FuncMap{
+		"base": func(path string) string {
+			return filepath.Base(path)
+		},
+		"fromUnix": func(ts int64) string {
+			return time.Unix(ts, 0).String()
+		},
+		"fromUnixMilli": func(ts int64) string {
+			return time.UnixMilli(ts).String()
+		},
+	}
+
+	return template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFiles...)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +88,7 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 		pageTitle += " - " + conv.Title
 	}
 
-	tmpl, err := parseTemplates("conversation.html")
+	tmpl, err := parseTemplates("conversation.html", "messages.html")
 	if err != nil {
 		utils.PrintError("error: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -83,12 +104,34 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func handleFile(w http.ResponseWriter, r *http.Request) {
+	// Assemble path
+	convID := chi.URLParam(r, "convID")
+	fileType := chi.URLParam(r, "fileType")
+	fileName := chi.URLParam(r, "imgPath")
+	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, fileName)
+
+	imgData, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	}
+
+	w.Write(imgData)
+}
+
 // Serve renders the web application and serves it on the port in
 // rd.Port. rd is a RuntimeData struct.
 func Serve(rd *RuntimeData) {
 	appTitle = rd.AppTitle
 	fbUser = rd.User
 	convs = rd.Convs
+	basePath = rd.BasePath
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -97,6 +140,7 @@ func Serve(rd *RuntimeData) {
 	r.Get("/", handleIndex)
 	r.Get("/messages", handleMessages)
 	r.Get("/messages/{convID}", handleConv)
+	r.Get("/files/messages/inbox/{convID}/{fileType}/{imgPath}", handleFile)
 
 	// Serve the application
 	utils.PrintInfo("Listening on http://localhost:%d", rd.Port)

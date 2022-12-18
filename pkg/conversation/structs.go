@@ -30,21 +30,21 @@ type Share struct {
 // path of the data directory.
 type File struct {
 	Path      string `json:"uri"`
-	TimeStamp uint64 `json:"creation_timestamp"`
+	TimeStamp int64  `json:"creation_timestamp"`
 }
 
 // Message represents a message in a conversation. Some values are
 // mutually exclusive, such as Message.Sticker and Message.Content.
 type Message struct {
 	SenderName   string      `json:"sender_name"`
-	TimeStamp    uint64      `json:"timestamp_ms"`
+	TimeStampMS  int64       `json:"timestamp_ms"`
 	Content      string      `json:"content"`
 	Files        []*File     `json:"files"`
 	Photos       []*File     `json:"photos"`
 	Share        *Share      `json:"share"`
 	Sticker      *File       `json:"sticker"`
 	Reactions    []*Reaction `json:"reactions"`
-	CallDuration int         `json:"call_duration"`
+	CallDuration int64       `json:"call_duration"`
 	Type         string      `json:"type"`
 	Unsent       bool        `json:"is_unsent"`
 }

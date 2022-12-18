@@ -1,9 +1,12 @@
 {{ template "base" . }}
 {{ define "body" }}
-<h2>{{ .PageTitle }}</h2>
-<ul>
+{{ block "conversation" . }}
+{{ end }}
+<div id="conv-list">
   {{ range $key, $value := .Convs }}
-    <li><a href="/messages/{{ $key }}">{{ $value.Title }}</a></li>
+    <div id="conv-item">
+      <a href="/messages/{{ $key }}">{{ $value.Title }}</a>
+    </div>
   {{ end }}
-</ul>
+</div>
 {{ end }}
