@@ -43,6 +43,39 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 		"fromUnixMilli": func(ts int64) string {
 			return time.UnixMilli(ts).String()
 		},
+		"messageClass": func(t string) string {
+			base := "message-type-"
+
+			switch t {
+			case conversation.MessageGeneric:
+				return base + "generic"
+			case conversation.MessageShare:
+				return base + "share"
+			case conversation.MessageSubscribe:
+				return base + "subscribe"
+			case conversation.MessageUnsubscribe:
+				return base + "unsubscribe"
+			case conversation.MessageCall:
+				return base + "call"
+			}
+
+			return ""
+		},
+		"conversationClass": func(t string) string {
+			base := "conversation-type-"
+
+			switch t {
+			case conversation.ConversationRegular:
+				return base + "regular"
+			case conversation.ConversationRegularGroup:
+				return base + "group"
+			}
+
+			return ""
+		},
+		"isGroup": func(t string) bool {
+			return t == conversation.ConversationRegularGroup
+		},
 	}
 
 	return template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFiles...)

@@ -20,8 +20,8 @@ type Reaction struct {
 	Actor string `json:"actor"`
 }
 
-// Share represents a shared media.
-type Share struct {
+// SharedMedia represents a shared media.
+type SharedMedia struct {
 	Link string `json:"link"`
 }
 
@@ -36,23 +36,24 @@ type File struct {
 // Message represents a message in a conversation. Some values are
 // mutually exclusive, such as Message.Sticker and Message.Content.
 type Message struct {
-	SenderName   string      `json:"sender_name"`
-	TimeStampMS  int64       `json:"timestamp_ms"`
-	Content      string      `json:"content"`
-	Audio        []*File     `json:"audio_files"`
-	Files        []*File     `json:"files"`
-	Photos       []*File     `json:"photos"`
-	Share        *Share      `json:"share"`
-	Sticker      *File       `json:"sticker"`
-	Reactions    []*Reaction `json:"reactions"`
-	CallDuration int64       `json:"call_duration"`
-	Type         string      `json:"type"`
-	Unsent       bool        `json:"is_unsent"`
+	SenderName   string         `json:"sender_name"`
+	TimeStampMS  int64          `json:"timestamp_ms"`
+	Content      string         `json:"content"`
+	Audio        []*File        `json:"audio_files"`
+	Files        []*File        `json:"files"`
+	Photos       []*File        `json:"photos"`
+	Share        *SharedMedia   `json:"share"`
+	Sticker      *File          `json:"sticker"`
+	Reactions    []*Reaction    `json:"reactions"`
+	CallDuration int64          `json:"call_duration"`
+	Type         string         `json:"type"`
+	Users        []*Participant `json:"users"`
+	Unsent       bool           `json:"is_unsent"`
 }
 
 // Conversation represents a conversation with one or more Facebook
 // user(s). It matches the data in the JSON files with a file path that
-// looks like: messages/inbox/{convID}/message_1.json
+// looks like: messages/inbox/{convID}/message_{num}.json
 type Conversation struct {
 	Participants     []*Participant `json:"participants"`
 	Messages         []*Message     `json:"messages"`

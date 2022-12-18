@@ -1,11 +1,19 @@
 {{ define "conversation" }}
 {{ with index .Convs .ConvID }}
-  Participants:
-  <ul>
-    {{ range .Participants }}
-      <li>{{ .Name }}</li>
-    {{ end }}
-  </ul>
+  {{ if isGroup .Type }}
+    <div class="participants">
+      Participants:
+      <ul>
+        {{ range .Participants }}
+          <li>{{ .Name }}</li>
+        {{ end }}
+      </ul>
+    </div>
+  {{ else }}
+    <div class="chatting-with">
+      Chatting with: {{ (index .Participants 0).Name }}
+    </div>
+  {{ end }}
   {{ range .Messages }}
     <div class="message-sender">
       <strong>{{ .SenderName }}</strong>
