@@ -44,8 +44,8 @@ func main() {
 			continue
 		}
 
-		filePath := filepath.Join(inboxPath, v.Name(), "message_1.json")
-		conv, err := conversation.Parse(filePath)
+		convPath := filepath.Join(inboxPath, v.Name())
+		conv, err := conversation.Parse(convPath)
 		if err != nil {
 			utils.PrintError("error: %s", err)
 		}

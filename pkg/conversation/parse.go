@@ -4,9 +4,28 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
+	"strings"
 
+	"github.com/imdario/mergo"
 	"github.com/samsapti/CleanBook/internal/utils"
 )
+
+type messagesTransformer struct{}
+
+func (t messagesTransformer) Transformer(typ reflect.Type) func(dst, src reflect.Value) error {
+	if typ == reflect.TypeOf([]*Message{}) {
+		return func(dst, src reflect.Value) error {
+			if dst.CanSet() {
+				dst.Set(reflect.AppendSlice(dst, src))
+			}
+
+			return nil
+		}
+	}
+
+	return nil
+}
 
 func fixEncoding(c *Conversation) {
 	utils.FixEncoding(&c.Title)
@@ -26,21 +45,39 @@ func fixEncoding(c *Conversation) {
 	}
 }
 
-// Parse takes a path to a JSON file containing a conversation, and
-// loads the data into a Conversation struct. It returns a pointer to
-// the Conversation struct.
-func Parse(filePath string) (*Conversation, error) {
+// Parse takes a path to a conversation folder, and loads the data into
+// a Conversation struct. It returns a pointer to the Conversation
+// struct.
+func Parse(convPath string) (*Conversation, error) {
 	var conv Conversation
 
-	// Open the file
-	file, err := os.Open(filePath)
+	// Get directory contents
+	dir, err := os.ReadDir(convPath)
 	if err != nil {
 		return nil, err
 	}
 
-	// Read JSON data
-	if err = json.NewDecoder(file).Decode(&conv); err != nil {
-		return nil, err
+	// Read message files
+	for _, f := range dir {
+		if !strings.HasPrefix(f.Name(), "message_") {
+			continue
+		}
+
+		var convPart Conversation
+
+		filePath := filepath.Join(convPath, f.Name())
+		file, err := os.Open(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.NewDecoder(file).Decode(&convPart)
+		if err != nil {
+			return nil, err
+		}
+
+		// Merge structs, only appending Messages slice field
+		mergo.Merge(&conv, convPart, mergo.WithTransformers(messagesTransformer{}))
 	}
 
 	// Make conv.Path relative to the path given in -path

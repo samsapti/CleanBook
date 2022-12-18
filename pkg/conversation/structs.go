@@ -39,6 +39,7 @@ type Message struct {
 	SenderName   string      `json:"sender_name"`
 	TimeStampMS  int64       `json:"timestamp_ms"`
 	Content      string      `json:"content"`
+	Audio        []*File     `json:"audio_files"`
 	Files        []*File     `json:"files"`
 	Photos       []*File     `json:"photos"`
 	Share        *Share      `json:"share"`
