@@ -138,10 +138,9 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFile(w http.ResponseWriter, r *http.Request) {
-	// Assemble path
 	convID := chi.URLParam(r, "convID")
 	fileType := chi.URLParam(r, "fileType")
-	fileName := chi.URLParam(r, "imgPath")
+	fileName := chi.URLParam(r, "imgFile")
 	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, fileName)
 
 	imgData, err := os.ReadFile(filePath)
@@ -156,6 +155,24 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(imgData)
+}
+
+func handleSticker(w http.ResponseWriter, r *http.Request) {
+	fileName := chi.URLParam(r, "stickerFile")
+	filePath := filepath.Join(basePath, "messages", "stickers_used", fileName)
+
+	stickerData, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	}
+
+	w.Write(stickerData)
 }
 
 // Serve renders the web application and serves it on the port in
@@ -173,7 +190,8 @@ func Serve(rd *RuntimeData) {
 	r.Get("/", handleIndex)
 	r.Get("/messages", handleMessages)
 	r.Get("/messages/{convID}", handleConv)
-	r.Get("/files/messages/inbox/{convID}/{fileType}/{imgPath}", handleFile)
+	r.Get("/files/messages/inbox/{convID}/{fileType}/{imgFile}", handleFile)
+	r.Get("/stickers/messages/stickers_used/{stickerFile}", handleSticker)
 
 	// Serve the application
 	utils.PrintInfo("Listening on http://localhost:%d", rd.Port)
