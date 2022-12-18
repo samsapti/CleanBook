@@ -83,6 +83,15 @@ func Parse(convPath string) (*Conversation, error) {
 	// Make conv.Path relative to the path given in -path
 	conv.Path = filepath.Join("messages", conv.Path)
 
+	// Fix deleted users
+	if len(conv.Participants) == 1 {
+		conv.Participants = append([]*Participant{{Name: "Facebook user"}}, conv.Participants...)
+
+		if len(conv.Title) == 0 {
+			conv.Title = "Facebook user"
+		}
+	}
+
 	// Reverse conv.Messages slice
 	for i, j := 0, len(conv.Messages)-1; i < j; i, j = i+1, j-1 {
 		conv.Messages[i], conv.Messages[j] = conv.Messages[j], conv.Messages[i]

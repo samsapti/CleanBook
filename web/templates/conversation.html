@@ -1,58 +1,60 @@
 {{ define "conversation" }}
 {{ with index .Convs .ConvID }}
-  {{ if isGroup .Type }}
-    <div class="participants">
-      Participants:
-      <ul>
-        {{ range .Participants }}
-          <li>{{ .Name }}</li>
-        {{ end }}
-      </ul>
-    </div>
-  {{ else }}
-    <div class="chatting-with">
-      Chatting with: {{ (index .Participants 0).Name }}
-    </div>
-  {{ end }}
-  {{ range .Messages }}
-    <div class="message-sender">
-      <strong>{{ .SenderName }}</strong>
-    </div>
-    <div class="message-timestamp">
-      <em>{{ .TimeStampMS | fromUnixMilli }}</em>
-    </div>
-    {{ with .Photos }}
-      <div class="message-photos">
-        {{ range . }}
-          <img src="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}">
-        {{ end }}
+  <div class="{{ conversationClass .Type }}">
+    {{ if isGroup .Type }}
+      <div class="participants">
+        Participants:
+        <ul>
+          {{ range .Participants }}
+            <li>{{ .Name }}</li>
+          {{ end }}
+        </ul>
+      </div>
+    {{ else }}
+      <div class="chatting-with">
+        Chatting with: {{ (index .Participants 0).Name }}
       </div>
     {{ end }}
-    {{ with .Files }}
-      <div class="message-files">
-        {{ range . }}
-          <a href="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}" target="_blank">
-            {{ .Path | base }}
-          </a>
-        {{ end }}
+    {{ range .Messages }}
+      <div class="message-sender">
+        <strong>{{ .SenderName }}</strong>
       </div>
-    {{ end }}
-    {{ with .Content }}
-      <div class="message-content">
-        {{ . }}
+      <div class="message-timestamp">
+        <em>{{ fromUnixMS .TimeStampMS }}</em>
       </div>
+      {{ with .Photos }}
+        <div class="message-photos">
+          {{ range . }}
+            <img src="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Files }}
+        <div class="message-files">
+          {{ range . }}
+            <a href="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}" target="_blank">
+              {{ base .Path }}
+            </a>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Content }}
+        <div class="message-content">
+          {{ . }}
+        </div>
+      {{ end }}
+      {{ with .Share }}
+        <div class="message-share">
+          <a href="{{ .Link }}" title="Shared media" target="_blank">{{ .Link }}</a>
+        </div>
+      {{ end }}
+      {{ with .Sticker }}
+        <div class="message-sticker">
+          <img src="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+        </div>
+      {{ end }}
     {{ end }}
-    {{ with .Share }}
-      <div class="message-share">
-        <a href="{{ .Link }}" title="Shared media" target="_blank">{{ .Link }}</a>
-      </div>
-    {{ end }}
-    {{ with .Sticker }}
-      <div class="message-sticker">
-        <img src="/files/{{ .Path }}" title="Created at {{ .TimeStamp | fromUnix }}">
-      </div>
-    {{ end }}
-  {{ end }}
+  </div>
 {{ else }}
   <p>No such conversation</p>
 {{ end }}

@@ -40,7 +40,7 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 		"fromUnix": func(ts int64) string {
 			return time.Unix(ts, 0).String()
 		},
-		"fromUnixMilli": func(ts int64) string {
+		"fromUnixMS": func(ts int64) string {
 			return time.UnixMilli(ts).String()
 		},
 		"messageClass": func(t string) string {
