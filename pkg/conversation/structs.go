@@ -61,5 +61,6 @@ type Conversation struct {
 	StillParticipant bool           `json:"is_still_participant"`
 	Type             string         `json:"thread_type"`
 	Path             string         `json:"thread_path"`
+	Image            *File          `json:"image"`
 	JoinMode         *JoinMode      `json:"joinable_mode"`
 }

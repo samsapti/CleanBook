@@ -1,6 +1,11 @@
 {{ define "conversation" }}
 {{ with index .Convs .ConvID }}
   <div class="{{ conversationClass .Type }}">
+    {{ with .Image }}
+      <div class="conversation-image">
+        <img src="/images/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+      </div>
+    {{ end }}
     {{ if isGroup .Type }}
       <div class="participants">
         Participants:
@@ -16,43 +21,45 @@
       </div>
     {{ end }}
     {{ range .Messages }}
-      <div class="message-sender">
-        <strong>{{ .SenderName }}</strong>
+      <div class="{{ messageClass .Type }}">
+        <div class="message-sender">
+          <strong>{{ .SenderName }}</strong>
+        </div>
+        <div class="message-timestamp">
+          <em>{{ fromUnixMS .TimeStampMS }}</em>
+        </div>
+        {{ with .Photos }}
+          <div class="message-photos">
+            {{ range . }}
+              <img src="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+            {{ end }}
+          </div>
+        {{ end }}
+        {{ with .Files }}
+          <div class="message-files">
+            {{ range . }}
+              <a href="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}" target="_blank">
+                {{ base .Path }}
+              </a>
+            {{ end }}
+          </div>
+        {{ end }}
+        {{ with .Content }}
+          <div class="message-content">
+            {{ . }}
+          </div>
+        {{ end }}
+        {{ with .Share }}
+          <div class="message-share">
+            <a href="{{ .Link }}" title="Shared media" target="_blank">{{ .Link }}</a>
+          </div>
+        {{ end }}
+        {{ with .Sticker }}
+          <div class="message-sticker">
+            <img src="/stickers/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+          </div>
+        {{ end }}
       </div>
-      <div class="message-timestamp">
-        <em>{{ fromUnixMS .TimeStampMS }}</em>
-      </div>
-      {{ with .Photos }}
-        <div class="message-photos">
-          {{ range . }}
-            <img src="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
-          {{ end }}
-        </div>
-      {{ end }}
-      {{ with .Files }}
-        <div class="message-files">
-          {{ range . }}
-            <a href="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}" target="_blank">
-              {{ base .Path }}
-            </a>
-          {{ end }}
-        </div>
-      {{ end }}
-      {{ with .Content }}
-        <div class="message-content">
-          {{ . }}
-        </div>
-      {{ end }}
-      {{ with .Share }}
-        <div class="message-share">
-          <a href="{{ .Link }}" title="Shared media" target="_blank">{{ .Link }}</a>
-        </div>
-      {{ end }}
-      {{ with .Sticker }}
-        <div class="message-sticker">
-          <img src="/stickers/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
-        </div>
-      {{ end }}
     {{ end }}
   </div>
 {{ else }}

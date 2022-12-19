@@ -137,11 +137,9 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func handleFile(w http.ResponseWriter, r *http.Request) {
-	convID := chi.URLParam(r, "convID")
-	fileType := chi.URLParam(r, "fileType")
-	fileName := chi.URLParam(r, "imgFile")
-	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, fileName)
+func handleConvImage(w http.ResponseWriter, r *http.Request) {
+	fileName := chi.URLParam(r, "fileName")
+	filePath := filepath.Join(basePath, "messages", "photos", fileName)
 
 	imgData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -157,8 +155,28 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 	w.Write(imgData)
 }
 
+func handleFile(w http.ResponseWriter, r *http.Request) {
+	convID := chi.URLParam(r, "convID")
+	fileType := chi.URLParam(r, "fileType")
+	fileName := chi.URLParam(r, "fileName")
+	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, fileName)
+
+	fileData, err := os.ReadFile(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	}
+
+	w.Write(fileData)
+}
+
 func handleSticker(w http.ResponseWriter, r *http.Request) {
-	fileName := chi.URLParam(r, "stickerFile")
+	fileName := chi.URLParam(r, "fileName")
 	filePath := filepath.Join(basePath, "messages", "stickers_used", fileName)
 
 	stickerData, err := os.ReadFile(filePath)
@@ -190,10 +208,11 @@ func Serve(rd *RuntimeData) {
 	r.Get("/", handleIndex)
 	r.Get("/messages", handleMessages)
 	r.Get("/messages/{convID}", handleConv)
-	r.Get("/files/messages/inbox/{convID}/{fileType}/{imgFile}", handleFile)
-	r.Get("/stickers/messages/stickers_used/{stickerFile}", handleSticker)
+	r.Get("/images/messages/photos/{fileName}", handleConvImage)
+	r.Get("/files/messages/inbox/{convID}/{fileType}/{fileName}", handleFile)
+	r.Get("/stickers/messages/stickers_used/{fileName}", handleSticker)
 
-	// Serve the application
+	// Serve application
 	utils.PrintInfo("Listening on http://localhost:%d", rd.Port)
 	if err := http.ListenAndServe(fmt.Sprintf("localhost:%d", rd.Port), r); err != nil {
 		utils.PrintFatal("error: %s", err)
