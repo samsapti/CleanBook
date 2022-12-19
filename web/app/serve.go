@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -76,6 +77,10 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 		"isGroup": func(t string) bool {
 			return t == conversation.ConversationRegularGroup
 		},
+		"nl2br": func(s string) template.HTML {
+			r := strings.ReplaceAll(template.HTMLEscapeString(s), "\n", "<br>")
+			return template.HTML(r)
+		},
 	}
 
 	return template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFiles...)
@@ -121,7 +126,8 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 		pageTitle += " - " + conv.Title
 	}
 
-	tmpl, err := parseTemplates("conversation.html", "messages.html")
+	convTmpl := filepath.Join("partials", "conversation.html")
+	tmpl, err := parseTemplates(convTmpl, "messages.html")
 	if err != nil {
 		utils.PrintError("error: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
