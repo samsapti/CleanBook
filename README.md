@@ -18,16 +18,18 @@ should do. But fear not, CleanBook fixes that problem.
 
 ## Usage
 
-For now, you need to have Git and Go installed on you system. To run
+For now, you need to have Go installed on you system. To install and run
 CleanBook, run the following commands:
 
 ```sh
-# Clone the repository
-git clone https://github.com/samsapti/CleanBook.git
-cd CleanBook
+# Install CleanBook
+go install github.com/samsapti/CleanBook/cmd/cleanbook@latest
 
 # Run CleanBook (-port is optional, default is 8080)
-go run cmd/cleanbook/main.go -path /path/to/your/data [-port 1234]
+cleanbook -path /path/to/your/data [-port 1234]
+
+# Get a help menu
+cleanbook [-h|-help]
 ```
 
 ## Features
