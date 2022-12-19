@@ -8,7 +8,7 @@ import (
 	"github.com/samsapti/CleanBook/internal/utils"
 	"github.com/samsapti/CleanBook/pkg/conversation"
 	"github.com/samsapti/CleanBook/pkg/user"
-	web "github.com/samsapti/CleanBook/web/app"
+	"github.com/samsapti/CleanBook/web"
 )
 
 const appTitle string = "CleanBook"

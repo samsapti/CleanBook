@@ -1,6 +1,7 @@
 package web
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -17,6 +18,8 @@ import (
 )
 
 var (
+	//go:embed templates/*
+	fs       embed.FS
 	appTitle string
 	fbUser   *user.Profile
 	convs    map[string]*conversation.Conversation
@@ -25,7 +28,7 @@ var (
 
 func parseTemplates(filenames ...string) (*template.Template, error) {
 	var tmplFiles []string
-	tmplDir := filepath.Join("web", "templates") // TODO: Make this work when not cloning the repo
+	tmplDir := "templates"
 	tmplFiles = append(tmplFiles, filepath.Join(tmplDir, "layout.html"))
 
 	// Append filenames
@@ -83,7 +86,7 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 		},
 	}
 
-	return template.New(tmplName).Funcs(funcMap).ParseFiles(tmplFiles...)
+	return template.New(tmplName).Funcs(funcMap).ParseFS(fs, tmplFiles...)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -144,8 +147,8 @@ func handleConv(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleConvImage(w http.ResponseWriter, r *http.Request) {
-	fileName := chi.URLParam(r, "fileName")
-	filePath := filepath.Join(basePath, "messages", "photos", fileName)
+	filename := chi.URLParam(r, "filename")
+	filePath := filepath.Join(basePath, "messages", "photos", filename)
 
 	imgData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -164,8 +167,8 @@ func handleConvImage(w http.ResponseWriter, r *http.Request) {
 func handleFile(w http.ResponseWriter, r *http.Request) {
 	convID := chi.URLParam(r, "convID")
 	fileType := chi.URLParam(r, "fileType")
-	fileName := chi.URLParam(r, "fileName")
-	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, fileName)
+	filename := chi.URLParam(r, "filename")
+	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, filename)
 
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -182,8 +185,8 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSticker(w http.ResponseWriter, r *http.Request) {
-	fileName := chi.URLParam(r, "fileName")
-	filePath := filepath.Join(basePath, "messages", "stickers_used", fileName)
+	filename := chi.URLParam(r, "filename")
+	filePath := filepath.Join(basePath, "messages", "stickers_used", filename)
 
 	stickerData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -214,9 +217,9 @@ func Serve(rd *RuntimeData) {
 	r.Get("/", handleIndex)
 	r.Get("/messages", handleMessages)
 	r.Get("/messages/{convID}", handleConv)
-	r.Get("/images/messages/photos/{fileName}", handleConvImage)
-	r.Get("/files/messages/inbox/{convID}/{fileType}/{fileName}", handleFile)
-	r.Get("/stickers/messages/stickers_used/{fileName}", handleSticker)
+	r.Get("/images/messages/photos/{filename}", handleConvImage)
+	r.Get("/files/messages/inbox/{convID}/{fileType}/{filename}", handleFile)
+	r.Get("/stickers/messages/stickers_used/{filename}", handleSticker)
 
 	// Serve application
 	utils.PrintInfo("Listening on http://localhost:%d", rd.Port)
