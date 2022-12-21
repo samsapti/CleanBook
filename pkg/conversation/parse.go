@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/imdario/mergo"
-	"github.com/samsapti/CleanBook/internal/utils"
+	"github.com/samsapti/CleanBook/pkg/encode"
 )
 
 type messagesTransformer struct{}
@@ -28,19 +28,19 @@ func (t messagesTransformer) Transformer(typ reflect.Type) func(dst, src reflect
 }
 
 func fixEncoding(c *Conversation) {
-	utils.FixEncoding(&c.Title)
+	encode.ISO8859_1(&c.Title)
 
 	for _, p := range c.Participants {
-		utils.FixEncoding(&p.Name)
+		encode.ISO8859_1(&p.Name)
 	}
 
 	for _, m := range c.Messages {
-		utils.FixEncoding(&m.SenderName)
-		utils.FixEncoding(&m.Content)
+		encode.ISO8859_1(&m.SenderName)
+		encode.ISO8859_1(&m.Content)
 
 		for _, r := range m.Reactions {
-			utils.FixEncoding(&r.Actor)
-			utils.FixEncoding(&r.Emoji)
+			encode.ISO8859_1(&r.Actor)
+			encode.ISO8859_1(&r.Emoji)
 		}
 	}
 }

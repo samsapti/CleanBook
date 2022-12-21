@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/samsapti/CleanBook/internal/utils"
+	"github.com/samsapti/CleanBook/pkg/encode"
 )
 
 func fixEncoding(p *Profile) {
-	utils.FixEncoding(&p.Name.Full)
-	utils.FixEncoding(&p.Name.First)
-	utils.FixEncoding(&p.Name.Middle)
-	utils.FixEncoding(&p.Name.Last)
-	utils.FixEncoding(&p.Username)
+	encode.ISO8859_1(&p.Name.Full)
+	encode.ISO8859_1(&p.Name.First)
+	encode.ISO8859_1(&p.Name.Middle)
+	encode.ISO8859_1(&p.Name.Last)
+	encode.ISO8859_1(&p.Username)
 }
 
 // Parse takes a path to a JSON file containing information on a
