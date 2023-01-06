@@ -7,15 +7,14 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
   </head>
   <body>
-    <div id="header">
-      <div id="title">
-        <h1>{{ .AppTitle }}</h1>
-      </div>
-    </div>
-    <div id="body">
+    <header id="navbar">
+      {{ block "navbar" . }}
+      {{ end }}
+    </header>
+    <main id="body">
       {{ block "body" . }}
       {{ end }}
-    </div>
+    </main>
   </body>
 </html>
 {{ end }}

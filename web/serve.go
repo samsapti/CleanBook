@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/samsapti/CleanBook/internal/utils"
 	"github.com/samsapti/CleanBook/pkg/conversation"
 	"github.com/samsapti/CleanBook/pkg/user"
@@ -32,6 +33,7 @@ var (
 func parseTemplates(filenames ...string) (*template.Template, error) {
 	var tmplFiles []string
 	tmplDir := "templates"
+	tmplFiles = append(tmplFiles, filepath.Join(tmplDir, "partials", "navbar.html"))
 	tmplFiles = append(tmplFiles, filepath.Join(tmplDir, "layout.html"))
 
 	// Append filenames
@@ -64,9 +66,9 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 				return base + "unsubscribe"
 			case conversation.MessageCall:
 				return base + "call"
+			default:
+				return base + "none"
 			}
-
-			return ""
 		},
 		"conversationClass": func(t string) string {
 			base := "conversation-type-"
@@ -76,9 +78,9 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 				return base + "regular"
 			case conversation.ConversationRegularGroup:
 				return base + "group"
+			default:
+				return base + "none"
 			}
-
-			return ""
 		},
 		"isGroup": func(t string) bool {
 			return t == conversation.ConversationRegularGroup
@@ -219,8 +221,18 @@ func Serve(rd *RuntimeData) {
 	// Prepare router
 	utils.PrintVerbose(rd.Verbose, "Preparing router with middlewares")
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			return fmt.Sprintf("http://localhost:%d", rd.Port) == fmt.Sprintf("%s://%s", r.URL.Scheme, r.URL.Host)
+		},
+		AllowedMethods:   []string{"GET"},
+		AllowCredentials: false,
+	}))
+
 	r.Use(middleware.CleanPath)
 	r.Use(middleware.RedirectSlashes)
+
 	if rd.Verbose {
 		r.Use(middleware.Logger)
 	}
