@@ -2,8 +2,10 @@ package web
 
 import (
 	"embed"
+	"errors"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,9 +19,10 @@ import (
 	"github.com/samsapti/CleanBook/pkg/user"
 )
 
+//go:embed templates/*
+var embedFS embed.FS
+
 var (
-	//go:embed templates/*
-	fs       embed.FS
 	appTitle string
 	fbUser   *user.Profile
 	convs    map[string]*conversation.Conversation
@@ -86,7 +89,7 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 		},
 	}
 
-	return template.New(tmplName).Funcs(funcMap).ParseFS(fs, tmplFiles...)
+	return template.New(tmplName).Funcs(funcMap).ParseFS(embedFS, tmplFiles...)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -152,7 +155,7 @@ func handleConvImage(w http.ResponseWriter, r *http.Request) {
 
 	imgData, err := os.ReadFile(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			utils.PrintError("error: %s", err)
@@ -173,7 +176,7 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			utils.PrintError("error: %s", err)
@@ -192,7 +195,7 @@ func handleSticker(w http.ResponseWriter, r *http.Request) {
 
 	stickerData, err := os.ReadFile(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			utils.PrintError("error: %s", err)
