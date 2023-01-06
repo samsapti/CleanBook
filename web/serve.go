@@ -155,6 +155,7 @@ func handleConvImage(w http.ResponseWriter, r *http.Request) {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
+			utils.PrintError("error: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
@@ -175,6 +176,7 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
+			utils.PrintError("error: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
@@ -193,6 +195,7 @@ func handleSticker(w http.ResponseWriter, r *http.Request) {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
+			utils.PrintError("error: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
@@ -210,10 +213,17 @@ func Serve(rd *RuntimeData) {
 	convs = rd.Convs
 	basePath = rd.BasePath
 
+	// Prepare router
+	utils.PrintVerbose(rd.Verbose, "Preparing router with middlewares")
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	r.Use(middleware.CleanPath)
+	r.Use(middleware.RedirectSlashes)
+	if rd.Verbose {
+		r.Use(middleware.Logger)
+	}
 
 	// Setup routes
+	utils.PrintVerbose(rd.Verbose, "Setting routes")
 	r.Get("/", handleIndex)
 	r.Get("/messages", handleMessages)
 	r.Get("/messages/{convID}", handleConv)

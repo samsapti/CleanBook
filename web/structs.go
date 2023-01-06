@@ -22,4 +22,5 @@ type RuntimeData struct {
 	Convs    map[string]*conversation.Conversation
 	Port     int
 	BasePath string
+	Verbose  bool
 }
