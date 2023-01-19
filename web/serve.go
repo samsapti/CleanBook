@@ -21,10 +21,13 @@ import (
 
 //go:embed templates/*
 var embedFS embed.FS
+var rd *RuntimeData
 
-var (
-	rd *RuntimeData
-)
+func sanitize(filename string) string {
+	sanitized := strings.ReplaceAll(filename, "\n", "")
+	sanitized = strings.ReplaceAll(sanitized, "\r", "")
+	return sanitized
+}
 
 func parseTemplates(filenames ...string) (*template.Template, error) {
 	var tmplFiles []string
@@ -162,7 +165,7 @@ func handleConvImage(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
 	filePath := filepath.Join(rd.BasePath, "messages", "photos", filename)
 
-	utils.PrintVerbose(rd.Verbose, "Reading image data from %s", filePath)
+	utils.PrintVerbose(rd.Verbose, "Reading image data from %s", sanitize(filePath))
 	imgData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -184,7 +187,7 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
 	filePath := filepath.Join(rd.BasePath, "messages", "inbox", convID, fileType, filename)
 
-	utils.PrintVerbose(rd.Verbose, "Reading file %s", filePath)
+	utils.PrintVerbose(rd.Verbose, "Reading file %s", sanitize(filePath))
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -204,7 +207,7 @@ func handleSticker(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
 	filePath := filepath.Join(rd.BasePath, "messages", "stickers_used", filename)
 
-	utils.PrintVerbose(rd.Verbose, "Reading sticker data from %s", filePath)
+	utils.PrintVerbose(rd.Verbose, "Reading sticker data from %s", sanitize(filePath))
 	stickerData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
