@@ -17,17 +17,13 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/samsapti/CleanBook/internal/utils"
 	"github.com/samsapti/CleanBook/pkg/conversation"
-	"github.com/samsapti/CleanBook/pkg/user"
 )
 
 //go:embed templates/*
 var embedFS embed.FS
 
 var (
-	appTitle string
-	fbUser   *user.Profile
-	convs    map[string]*conversation.Conversation
-	basePath string
+	rd *RuntimeData
 )
 
 func parseTemplates(filenames ...string) (*template.Template, error) {
@@ -95,66 +91,78 @@ func parseTemplates(filenames ...string) (*template.Template, error) {
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := parseTemplates("index.html")
+	tmplFile := "index.html"
+
+	utils.PrintVerbose(rd.Verbose, "Parsing template %s", tmplFile)
+	tmpl, err := parseTemplates(tmplFile)
 	if err != nil {
 		utils.PrintError("error: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	utils.PrintVerbose(rd.Verbose, "Executing template %s", tmplFile)
 	tmpl.Execute(w, &PageData{
-		AppTitle:  appTitle,
+		AppTitle:  rd.AppTitle,
 		PageTitle: "Welcome",
-		User:      fbUser,
-		Convs:     convs,
+		User:      rd.User,
+		Convs:     rd.Convs,
 	})
 }
 
 func handleMessages(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := parseTemplates("messages.html")
+	tmplFile := "messages.html"
+
+	utils.PrintVerbose(rd.Verbose, "Parsing template %s", tmplFile)
+	tmpl, err := parseTemplates(tmplFile)
 	if err != nil {
 		utils.PrintError("error: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	utils.PrintVerbose(rd.Verbose, "Executing template %s", tmplFile)
 	tmpl.Execute(w, &PageData{
-		AppTitle:  appTitle,
+		AppTitle:  rd.AppTitle,
 		PageTitle: "Messages",
-		User:      fbUser,
-		Convs:     convs,
+		User:      rd.User,
+		Convs:     rd.Convs,
 	})
 }
 
 func handleConv(w http.ResponseWriter, r *http.Request) {
 	pageTitle := "Messages"
 	convID := chi.URLParam(r, "convID")
-	conv := convs[convID]
+	conv := rd.Convs[convID]
 	if conv != nil {
 		pageTitle += " - " + conv.Title
 	}
 
-	convTmpl := filepath.Join("partials", "conversation.html")
-	tmpl, err := parseTemplates(convTmpl, "messages.html")
+	tmplFile := filepath.Join("partials", "conversation.html")
+
+	utils.PrintVerbose(rd.Verbose, "Parsing template %s", tmplFile)
+	tmpl, err := parseTemplates(tmplFile, "messages.html")
 	if err != nil {
 		utils.PrintError("error: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	utils.PrintVerbose(rd.Verbose, "Executing template %s", tmplFile)
 	tmpl.Execute(w, &PageData{
-		AppTitle:  appTitle,
+		AppTitle:  rd.AppTitle,
 		PageTitle: pageTitle,
-		User:      fbUser,
-		Convs:     convs,
-		ConvID:    chi.URLParam(r, "convID"),
+		User:      rd.User,
+		Convs:     rd.Convs,
+		ConvID:    convID,
 	})
 }
 
 func handleConvImage(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
-	filePath := filepath.Join(basePath, "messages", "photos", filename)
+	filePath := filepath.Join(rd.BasePath, "messages", "photos", filename)
 
+	utils.PrintVerbose(rd.Verbose, "Reading image data from %s", filePath)
 	imgData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -174,8 +182,9 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 	convID := chi.URLParam(r, "convID")
 	fileType := chi.URLParam(r, "fileType")
 	filename := chi.URLParam(r, "filename")
-	filePath := filepath.Join(basePath, "messages", "inbox", convID, fileType, filename)
+	filePath := filepath.Join(rd.BasePath, "messages", "inbox", convID, fileType, filename)
 
+	utils.PrintVerbose(rd.Verbose, "Reading file %s", filePath)
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -193,8 +202,9 @@ func handleFile(w http.ResponseWriter, r *http.Request) {
 
 func handleSticker(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
-	filePath := filepath.Join(basePath, "messages", "stickers_used", filename)
+	filePath := filepath.Join(rd.BasePath, "messages", "stickers_used", filename)
 
+	utils.PrintVerbose(rd.Verbose, "Reading sticker data from %s", filePath)
 	stickerData, err := os.ReadFile(filePath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -212,22 +222,18 @@ func handleSticker(w http.ResponseWriter, r *http.Request) {
 
 // Serve renders the web application and serves it on the port in
 // rd.Port. rd is a RuntimeData struct.
-func Serve(rd *RuntimeData) {
-	appTitle = rd.AppTitle
-	fbUser = rd.User
-	convs = rd.Convs
-	basePath = rd.BasePath
+func Serve(data *RuntimeData) {
+	rd = data
 
 	// Prepare router
 	utils.PrintVerbose(rd.Verbose, "Preparing router with middlewares")
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
-		AllowOriginFunc: func(r *http.Request, origin string) bool {
-			return fmt.Sprintf("http://localhost:%d", rd.Port) == fmt.Sprintf("%s://%s", r.URL.Scheme, r.URL.Host)
-		},
+		AllowedOrigins:   []string{fmt.Sprintf("http://localhost:%d", rd.Port)},
 		AllowedMethods:   []string{"GET"},
 		AllowCredentials: false,
+		Debug:            rd.Verbose,
 	}))
 
 	r.Use(middleware.CleanPath)
