@@ -42,6 +42,7 @@ type Message struct {
 	Audio        []*File        `json:"audio_files"`
 	Files        []*File        `json:"files"`
 	Photos       []*File        `json:"photos"`
+	Videos       []*File        `json:"videos"`
 	Share        *SharedMedia   `json:"share"`
 	Sticker      *File          `json:"sticker"`
 	Reactions    []*Reaction    `json:"reactions"`

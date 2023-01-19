@@ -17,7 +17,7 @@
       </div>
     {{ else }}
       <div class="chatting-with">
-        Chatting with: {{ (index .Participants 0).Name }}
+        Chatting with: {{ with index .Participants 0 }} {{ .Name }} {{ end }}
       </div>
     {{ end }}
     {{ range .Messages }}
@@ -32,6 +32,17 @@
           <div class="message-photos">
             {{ range . }}
               <img src="/files/{{ .Path }}" title="Created at {{ fromUnix .TimeStamp }}">
+            {{ end }}
+          </div>
+        {{ end }}
+        {{ with .Videos }}
+          <div class="mesage-videos">
+            {{ range . }}
+              <video controls src="/files/{{ .Path }}">
+                Your browser doesn't support embedded videos. Instead, you can
+                <a href="/files/{{ .Path }}" target="_blank">open it in a new tab</a>
+                and watch it there.
+              </video>
             {{ end }}
           </div>
         {{ end }}
